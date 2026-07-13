@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ChallengeReviewer.AI/ChallengeReviewer.AI.csproj" />
+  <Project Path="ChallengeReviewer.Core/ChallengeReviewer.Core.csproj" />
+  <Project Path="ChallengeReviewer.Infra/ChallengeReviewer.Infra.csproj" />
+  <Project Path="ChallengeReviewer/ChallengeReviewer.csproj" />
+</Solution>
