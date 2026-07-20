@@ -17,7 +17,7 @@ namespace ChallengeReviewer.AI.Factories
             Model model,
             float temperature,
             string instructions,
-            IList<AITool> tools)
+            IList<AITool>? tools = null)
         {
             var client = provider switch
             {
