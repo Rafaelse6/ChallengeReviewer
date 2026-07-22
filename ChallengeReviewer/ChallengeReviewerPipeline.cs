@@ -1,8 +1,11 @@
-﻿using ChallengeReviewer.Core.Agents.Abstractions;
+﻿using ChallengeReviewer.AI;
+using ChallengeReviewer.Core.Agents.Abstractions;
 using ChallengeReviewer.Core.Enums;
 using ChallengeReviewer.Core.Models;
 using ChallengeReviewer.Core.Models.GitHub;
 using ChallengeReviewer.Core.Services.Abstractions;
+using ChallengeReviewer.Infra;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ChallengeReviewer
 {
@@ -19,5 +22,21 @@ namespace ChallengeReviewer
         private GitHubRepository _repository = new("", "", []);
         private StaticAnalysisReport _analysis = default!;
         private Review _review = default!;
+
+        private ChallengeReviewerPipeline(IServiceCollection services)
+        {
+            services.AddInfrastructure();
+            services.AddAgents();
+
+            var provider = services.BuildServiceProvider();
+            _gitHubService = provider.GetService<IGitHubService>();
+            _staticAnalysisReportService = provider.GetService<IStaticAnalysisReportService>();
+            _agent = provider.GetService<IAgent<StaticAnalysisReport, Review>>();
+        }
+
+        public static ChallengeReviewerPipeline Create(IServiceCollection services)
+        {
+            return new ChallengeReviewerPipeline(services);
+        }
     }
 }
