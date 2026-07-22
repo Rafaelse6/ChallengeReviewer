@@ -6,6 +6,7 @@ using ChallengeReviewer.Core.Models.GitHub;
 using ChallengeReviewer.Core.Services.Abstractions;
 using ChallengeReviewer.Infra;
 using Microsoft.Extensions.DependencyInjection;
+using Spectre.Console;
 
 namespace ChallengeReviewer
 {
@@ -37,6 +38,22 @@ namespace ChallengeReviewer
         public static ChallengeReviewerPipeline Create(IServiceCollection services)
         {
             return new ChallengeReviewerPipeline(services);
+        }
+
+        public ChallengeReviewerPipeline WithWelcomeScreen()
+        {
+            Console.Clear();
+
+            //Spectre.Console
+            AnsiConsole.Write(new FigletText("Challenger Reviewer")
+            {
+                Color = Color.Purple,
+                Justification = Justify.Center
+            });
+            AnsiConsole.Write(new Text("Version 0.1.0", new Style(Color.Grey)) { Justification = Justify.Center });
+            AnsiConsole.Write(new Text("balta.io", new Style(Color.Grey)) { Justification = Justify.Center });
+
+            return this;
         }
     }
 }
