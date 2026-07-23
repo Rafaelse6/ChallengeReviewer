@@ -1,6 +1,7 @@
 ﻿using ChallengeReviewer.AI;
 using ChallengeReviewer.Core.Agents.Abstractions;
 using ChallengeReviewer.Core.Enums;
+using ChallengeReviewer.Core.Extensions;
 using ChallengeReviewer.Core.Models;
 using ChallengeReviewer.Core.Models.GitHub;
 using ChallengeReviewer.Core.Services.Abstractions;
@@ -65,14 +66,38 @@ namespace ChallengeReviewer
             _includeCodeReview = AnsiConsole.Confirm("Include a code review?");
             _provider = AnsiConsole.Prompt(
                 new SelectionPrompt<Provider>()
-                    .Title("Which [green]AI provider[/] should I use:") 
+                    .Title("Which [green]AI provider[/] should I use:")
                     .AddChoices(Provider.Ollama, Provider.OpenAi));
-            
+
             _model = AnsiConsole.Prompt(
                  new SelectionPrompt<Model>()
-                .Title("Which [green]model[/] should I use:") 
+                .Title("Which [green]model[/] should I use:")
                 .AddChoices(Model.Qwen25Coder7B, Model.Gemma4, Model.Gpt4Omini));
             return this;
         }
+
+        public ChallengeReviewerPipeline ConfirmAndStart()
+        {
+            var summary = new Table()
+                .RoundedBorder()
+                .BorderColor(Color.Grey)
+                .AddColumn("Prompt")
+                .AddColumn("Answer")
+                .AddRow("URL", _repositoryUrl)
+                .AddRow("Review Code", _includeCodeReview ? "Yes" : "No")
+                .AddRow("Provider", _provider.Description())
+                .AddRow("Model", _model.Description());
+
+            AnsiConsole.Write(summary);
+            AnsiConsole.WriteLine();
+
+            if (AnsiConsole.Confirm("Is this correct?"))
+                return this;
+
+            AnsiConsole.Markup("[red]Review cancelled. Goodbye![/]");
+            Environment.Exit(0);
+            return this;
+        }
+
     }
 }

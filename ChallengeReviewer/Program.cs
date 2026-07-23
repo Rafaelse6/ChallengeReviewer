@@ -18,4 +18,5 @@ using var cts = new CancellationTokenSource();
 var pipeline = ChallengeReviewerPipeline
     .Create(services)
     .WithWelcomeScreen()
-    .CollectInputs();
+    .CollectInputs()
+    .ConfirmAndStart();

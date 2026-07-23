@@ -11,5 +11,5 @@ public enum Model
     Qwen25Coder7B = 1,
 
     [Description("gpt-4o-mini")]
-    Gpt40mini = 2
+    Gpt4Omini = 2
 }
