@@ -15,8 +15,9 @@ var services = new ServiceCollection();
 
 using var cts = new CancellationTokenSource();
 
-var pipeline = ChallengeReviewerPipeline
+var pipeline = await ChallengeReviewerPipeline
     .Create(services)
     .WithWelcomeScreen()
     .CollectInputs()
-    .ConfirmAndStart();
+    .ConfirmAndStart()
+    .FetchRepositoryAsync(cts.Token);

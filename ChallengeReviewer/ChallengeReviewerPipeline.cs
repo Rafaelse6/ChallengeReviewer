@@ -99,5 +99,31 @@ namespace ChallengeReviewer
             return this;
         }
 
+        public async Task<ChallengeReviewerPipeline> FetchRepositoryAsync(CancellationToken cancellationToken = default)
+        {
+            AnsiConsole.WriteLine();
+            AnsiConsole.Write(new Rule("[yellow]GitHub Fetching[/]"));
+            AnsiConsole.WriteLine();
+
+            await AnsiConsole.Status()
+                .Spinner(Spinner.Known.Dots) 
+                .StartAsync($"Fetching GitHub repository for URL [green]{_repositoryUrl}[/]...", async ctx =>
+                {
+                    _repository = await _gitHubService.FetchRepositoryAsync(_repositoryUrl, cancellationToken);
+
+                    if (string.IsNullOrEmpty(_repository.Title))
+                    {
+                        AnsiConsole.MarkupLine($"[red]Failed to fetch repository for URL {_repositoryUrl}[/]");
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine($"Repository: [green]{_repository.Title}[/]");
+                        AnsiConsole.MarkupLine($"Author: [green]{_repository.Owner}[/]");
+                    }
+                }); 
+
+            return this;
+        }
     }
 }
