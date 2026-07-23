@@ -22,4 +22,6 @@ var pipeline = await ChallengeReviewerPipeline
     .ConfirmAndStart()
     .FetchRepositoryAsync(cts.Token);
 
-pipeline.ShowFileTree();
+pipeline
+    .ShowFileTree()
+    .RunStaticAnalysis();

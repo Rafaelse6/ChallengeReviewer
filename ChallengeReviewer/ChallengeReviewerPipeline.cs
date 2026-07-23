@@ -106,7 +106,7 @@ namespace ChallengeReviewer
             AnsiConsole.WriteLine();
 
             await AnsiConsole.Status()
-                .Spinner(Spinner.Known.Dots) 
+                .Spinner(Spinner.Known.Dots)
                 .StartAsync($"Fetching GitHub repository for URL [green]{_repositoryUrl}[/]...", async ctx =>
                 {
                     _repository = await _gitHubService.FetchRepositoryAsync(_repositoryUrl, cancellationToken);
@@ -121,7 +121,7 @@ namespace ChallengeReviewer
                         AnsiConsole.MarkupLine($"Repository: [green]{_repository.Title}[/]");
                         AnsiConsole.MarkupLine($"Author: [green]{_repository.Owner}[/]");
                     }
-                }); 
+                });
 
             return this;
         }
@@ -142,5 +142,53 @@ namespace ChallengeReviewer
 
             return this;
         }
+
+        public ChallengeReviewerPipeline RunStaticAnalysis()
+        {
+            AnsiConsole.WriteLine();
+            AnsiConsole.Write(new Rule("[yellow]Static Analyzer[/]"));
+            AnsiConsole.WriteLine();
+
+            var total = _repository.Files.Count(x => x.Path.EndsWith(".cs"));
+            var analyzed = 0;
+            var table = new Table()
+                .AddColumn("File")
+                .AddColumn("Total Lines")
+                .Title($" {analyzed}/{total} files analyzed");
+
+            AnsiConsole.Live(table).Start(ctx =>
+            {
+                foreach (var file in _repository.Files.Where(x => x.Path.EndsWith(".cs")))
+                {
+                    table.AddRow(file.Path, "0");
+                    table.Title($" {++analyzed}/{total} files analyzed");
+                    ctx.Refresh();
+                    Thread.Sleep(1500);
+                }
+            });
+
+            AnsiConsole.WriteLine();
+            _analysis = _staticAnalysisReportService.AnalyzeCode(_repository);
+
+            var panel = new Panel(
+                new Rows(
+                    new Markup($"[bold]Total Files: [/]       {_analysis.TotalFiles}"),
+                    new Markup($"[bold]Total Classes:[/]       {_analysis.TotalClasses}"),
+                    new Markup($"[bold]Total Methods:[/]       {_analysis.TotalMethods}"),
+                    new Markup($"[bold]Total Lines:  [/]       {_analysis.TotalLines}"),
+                    new Markup($"[bold]Infos:        [/]       {_analysis.Info.Count}"),
+                    new Markup($"[yellow][bold]Warnings:    [/]   {_analysis.Warnings.Count}"),
+                    new Markup($"[red][bold]Errors:      [/]     {_analysis.Errors.Count}"),
+                    new Markup($"[yellow][bold]Issues:      [/]     {_analysis.Issues.Count}")
+                ))
+                .Header("[yellow]Code analysis...[/]")
+                .Border(BoxBorder.Rounded);
+
+            AnsiConsole.Write(panel);
+            AnsiConsole.WriteLine();
+
+            return this;
+        }
+
     }
 }
