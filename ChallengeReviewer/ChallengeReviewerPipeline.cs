@@ -125,5 +125,22 @@ namespace ChallengeReviewer
 
             return this;
         }
+
+        public ChallengeReviewerPipeline ShowFileTree()
+        {
+            AnsiConsole.WriteLine();
+
+            var tree = new Tree(_repository.Title);
+            foreach (var file in _repository.Files)
+                tree.AddNode(file.Path);
+            AnsiConsole.Write(tree);
+
+            AnsiConsole.WriteLine();
+            AnsiConsole.WriteLine("Files to be analyzed:");
+            foreach (var file in _repository.Files.Where(x => x.Path.EndsWith(".cs")))
+                AnsiConsole.WriteLine($"- {file.Path}");
+
+            return this;
+        }
     }
 }
