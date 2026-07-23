@@ -55,5 +55,24 @@ namespace ChallengeReviewer
 
             return this;
         }
+
+        public ChallengeReviewerPipeline CollectInputs()
+        {
+            AnsiConsole.WriteLine();
+            AnsiConsole.WriteLine();
+
+            _repositoryUrl = AnsiConsole.Ask<string>("Enter the GitHub repository [green]url[/] to review:?");
+            _includeCodeReview = AnsiConsole.Confirm("Include a code review?");
+            _provider = AnsiConsole.Prompt(
+                new SelectionPrompt<Provider>()
+                    .Title("Which [green]AI provider[/] should I use:") 
+                    .AddChoices(Provider.Ollama, Provider.OpenAi));
+            
+            _model = AnsiConsole.Prompt(
+                 new SelectionPrompt<Model>()
+                .Title("Which [green]model[/] should I use:") 
+                .AddChoices(Model.Qwen25Coder7B, Model.Gemma4, Model.Gpt4Omini));
+            return this;
+        }
     }
 }

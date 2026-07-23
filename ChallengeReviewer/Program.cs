@@ -15,4 +15,7 @@ var services = new ServiceCollection();
 
 using var cts = new CancellationTokenSource();
 
-var pipeline = ChallengeReviewerPipeline.Create(services).WithWelcomeScreen();
+var pipeline = ChallengeReviewerPipeline
+    .Create(services)
+    .WithWelcomeScreen()
+    .CollectInputs();
